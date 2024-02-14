@@ -6,6 +6,8 @@ import lombok.Data;
 
 import java.util.List;
 
+import io.github.matgalv2.githubtools.common.Error;
+
 
 @Data
 public class Repository {
@@ -19,8 +21,9 @@ public class Repository {
     private boolean fork;
     @JsonProperty("private")
     private boolean isPrivate;
-    @JsonProperty("branches")
+
     private List<Branch> branches;
+    private List<Error> errors = List.of();
 
     @Data
     public static class Owner{
