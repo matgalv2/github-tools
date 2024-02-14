@@ -1,4 +1,4 @@
-# Salary prediction service
+# GitHub Tools
 Simple REST application for listing user's repositories 
 
 Technology stack:
