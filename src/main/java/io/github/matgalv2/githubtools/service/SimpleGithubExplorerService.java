@@ -23,25 +23,24 @@ public class SimpleGithubExplorerService implements GithubExplorerService {
     private static final String branchesURL = "https://api.github.com/repos/%s/%s/branches";
 
     @Override
-    public Either<Error, List<Repository>> findUser(String username) {
-        return getUsersRepositories(username);
-    }
-
-    private Either<Error, List<Repository>> getUsersRepositories(String username) {
+    public Either<Error, List<Repository>> getUserRepositories(String username) {
         ParameterizedTypeReference<List<Repository>> typeRef = new ParameterizedTypeReference<>() {};
         Either<Error, List<Repository>> response = getRequest(String.format(reposURL, username), typeRef);
 
-        response.forEach(repositories -> repositories.forEach(repository -> {
-            String url = String.format(branchesURL, repository.getOwner().getLogin(), repository.getName());
-            repository.setBranches_url(url);
-            Either<Error, List<Branch>> branches = getBranches(repository.getBranches_url(), repository.getName());
-            if(branches.isLeft()){
-                repository.setErrors(List.of(branches.getLeft()));
-                repository.setBranches(List.of());
-            }
-            else
-                repository.setBranches(branches.get());
-        }));
+        // There is no need to filter public repositories, because unauthorized requests get only public repositories.
+        response
+                .map(repositories -> repositories.stream().filter(repository -> !repository.isFork()).toList())
+                .forEach(repositories -> repositories.forEach(repository -> {
+                    String url = String.format(branchesURL, repository.getOwner().getLogin(), repository.getName());
+                    repository.setBranches_url(url);
+                    Either<Error, List<Branch>> branches = getBranches(repository.getBranches_url(), repository.getName());
+                    if(branches.isLeft()){
+                        repository.setErrors(List.of(branches.getLeft()));
+                        repository.setBranches(List.of());
+                    }
+                    else
+                        repository.setBranches(branches.get());
+                }));
         return response;
     }
 
