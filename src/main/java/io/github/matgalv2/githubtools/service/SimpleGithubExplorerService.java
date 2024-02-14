@@ -11,6 +11,8 @@ import org.springframework.web.client.RestClient;
 
 import java.util.List;
 
+import static io.github.matgalv2.githubtools.common.ErrorMessages.COULD_NOT_CONNECT_TO;
+import static io.github.matgalv2.githubtools.common.ErrorMessages.COULD_NOT_GET_BRANCHES;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 
@@ -32,15 +34,26 @@ public class SimpleGithubExplorerService implements GithubExplorerService {
         response.forEach(repositories -> repositories.forEach(repository -> {
             String url = String.format(branchesURL, repository.getOwner().getLogin(), repository.getName());
             repository.setBranches_url(url);
-            Either<Error, List<Branch>> branches = getBranches(repository.getBranches_url());
-            repository.setBranches(branches.getOrElse(List.of()));
+            Either<Error, List<Branch>> branches = getBranches(repository.getBranches_url(), repository.getName());
+            if(branches.isLeft()){
+                repository.setErrors(List.of(branches.getLeft()));
+                repository.setBranches(List.of());
+            }
+            else
+                repository.setBranches(branches.get());
         }));
         return response;
     }
 
-    private Either<Error, List<Branch>> getBranches(String branchesURL){
+    private Either<Error, List<Branch>> getBranches(String branchesURL, String repositoryName){
         ParameterizedTypeReference<List<Branch>> typeRef = new ParameterizedTypeReference<>() {};
-        return getRequest(branchesURL, typeRef);
+        Either<Error, List<Branch>> response = getRequest(branchesURL, typeRef)
+                .mapLeft( error ->
+                    new Error(
+                            error.getStatus(),
+                            String.format(COULD_NOT_GET_BRANCHES, repositoryName, error.getMessage()))
+                );
+        return response;
     }
 
     private <T> Either<Error, T> getRequest(String url, ParameterizedTypeReference<T> typeRef){
@@ -50,15 +63,23 @@ public class SimpleGithubExplorerService implements GithubExplorerService {
                 .baseUrl(url)
                 .build();
 
-        return client
-                .get()
-                .accept(APPLICATION_JSON)
-                .exchange((req, resp) -> {
-                    if (resp.getStatusCode().is4xxClientError())
-                        return Either.left(new Error(resp.getStatusCode().value(), resp.getStatusText()));
-                    else
-                        return Either.right(resp.bodyTo(typeRef));
-                });
+        Either<Error, T> response;
+
+        try{
+            response = client
+                    .get()
+                    .accept(APPLICATION_JSON)
+                    .exchange((req, resp) -> {
+                        if (resp.getStatusCode().is4xxClientError())
+                            return Either.left(new Error(resp.getStatusCode().value(), resp.getStatusText()));
+                        else
+                            return Either.right(resp.bodyTo(typeRef));
+                    });
+        }
+        catch (Exception exception){
+            response = Either.left(new Error(500, String.format(COULD_NOT_CONNECT_TO, url)));
+        }
+        return response;
     }
 
 }
