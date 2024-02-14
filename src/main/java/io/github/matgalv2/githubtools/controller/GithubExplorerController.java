@@ -45,6 +45,7 @@ public class GithubExplorerController {
 
         return mapper
                 .typeMap(Repository.class, RepositoryDTO.class)
+                .addMapping(Repository::getName, RepositoryDTO::setRepositoryName)
                 .setPostConverter(converter);
     }
 
