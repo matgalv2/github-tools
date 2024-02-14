@@ -7,5 +7,5 @@ import io.vavr.control.Either;
 import java.util.List;
 
 public interface GithubExplorerService {
-    Either<Error, List<Repository>> findUser(String username);
+    Either<Error, List<Repository>> getUserRepositories(String username);
 }

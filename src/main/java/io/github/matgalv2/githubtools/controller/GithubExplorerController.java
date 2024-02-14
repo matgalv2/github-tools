@@ -25,9 +25,9 @@ public class GithubExplorerController {
     private final ModelMapper mapper;
 
     @GetMapping("/repos/{username}")
-    public ResponseEntity<?> getConvertedNumber(@PathVariable @NotBlank String username){
+    public ResponseEntity<?> getUserRepositories(@PathVariable @NotBlank String username){
         return githubExplorerService
-                .findUser(username)
+                .getUserRepositories(username)
                 .map(repositories -> repositories.stream().map(repositoryToAPI()::map))
                 .fold(
                         error -> ResponseEntity.status(error.getStatus()).body(error),
