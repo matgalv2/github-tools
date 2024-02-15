@@ -1,9 +1,12 @@
 package io.github.matgalv2.githubtools.githubapi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
 public class Branch {
     @JsonProperty("name")
     private String name;
@@ -11,7 +14,9 @@ public class Branch {
     private Commit lastCommit;
 
     @Data
-    static class Commit{
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Commit{
         @JsonProperty("sha")
         private String sha;
     }
