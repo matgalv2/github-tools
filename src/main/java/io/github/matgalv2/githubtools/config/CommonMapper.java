@@ -1,4 +1,4 @@
-package io.github.matgalv2.githubtools.converters;
+package io.github.matgalv2.githubtools.config;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
