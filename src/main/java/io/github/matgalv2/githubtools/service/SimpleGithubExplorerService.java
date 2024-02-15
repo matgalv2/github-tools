@@ -34,10 +34,8 @@ public class SimpleGithubExplorerService implements GithubExplorerService {
                     String url = String.format(branchesURL, repository.getOwner().getLogin(), repository.getName());
                     repository.setBranches_url(url);
                     Either<Error, List<Branch>> branches = getBranches(repository.getBranches_url(), repository.getName());
-                    if(branches.isLeft()){
+                    if(branches.isLeft())
                         repository.setErrors(List.of(branches.getLeft()));
-                        repository.setBranches(List.of());
-                    }
                     else
                         repository.setBranches(branches.get());
                 }));
