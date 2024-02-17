@@ -1,8 +1,8 @@
 package io.github.matgalv2.githubtools.service;
 
 import io.github.matgalv2.githubtools.common.Error;
-import io.github.matgalv2.githubtools.githubapi.Repository;
 import io.github.matgalv2.githubtools.githubapi.Branch;
+import io.github.matgalv2.githubtools.githubapi.Repository;
 import io.vavr.control.Either;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -32,9 +32,9 @@ public class SimpleGithubExplorerService implements GithubExplorerService {
                 .map(repositories -> repositories.stream().filter(repository -> !repository.isFork()).toList())
                 .forEach(repositories -> repositories.forEach(repository -> {
                     String url = String.format(branchesURL, repository.getOwner().getLogin(), repository.getName());
-                    repository.setBranches_url(url);
-                    Either<Error, List<Branch>> branches = getBranches(repository.getBranches_url(), repository.getName());
-                    if(branches.isLeft())
+                    repository.setBranchesUrl(url);
+                    Either<Error, List<Branch>> branches = getBranches(repository.getBranchesUrl(), repository.getName());
+                    if (branches.isLeft())
                         repository.setErrors(List.of(branches.getLeft()));
                     else
                         repository.setBranches(branches.get());
@@ -42,18 +42,18 @@ public class SimpleGithubExplorerService implements GithubExplorerService {
         return response;
     }
 
-    private Either<Error, List<Branch>> getBranches(String branchesURL, String repositoryName){
+    private Either<Error, List<Branch>> getBranches(String branchesURL, String repositoryName) {
         ParameterizedTypeReference<List<Branch>> typeRef = new ParameterizedTypeReference<>() {};
         Either<Error, List<Branch>> response = getRequest(branchesURL, typeRef)
-                .mapLeft( error ->
-                    new Error(
-                            error.getStatus(),
-                            String.format(COULD_NOT_GET_BRANCHES, repositoryName, error.getMessage()))
+                .mapLeft(error ->
+                        new Error(
+                                error.getStatus(),
+                                String.format(COULD_NOT_GET_BRANCHES, repositoryName, error.getMessage()))
                 );
         return response;
     }
 
-    private <T> Either<Error, T> getRequest(String url, ParameterizedTypeReference<T> typeRef){
+    private <T> Either<Error, T> getRequest(String url, ParameterizedTypeReference<T> typeRef) {
         RestClient client = RestClient
                 .builder()
                 .requestFactory(new HttpComponentsClientHttpRequestFactory())
@@ -62,7 +62,7 @@ public class SimpleGithubExplorerService implements GithubExplorerService {
 
         Either<Error, T> response;
 
-        try{
+        try {
             response = client
                     .get()
                     .accept(APPLICATION_JSON)
@@ -72,8 +72,7 @@ public class SimpleGithubExplorerService implements GithubExplorerService {
                         else
                             return Either.right(resp.bodyTo(typeRef));
                     });
-        }
-        catch (Exception exception){
+        } catch (Exception exception) {
             response = Either.left(new Error(500, String.format(COULD_NOT_CONNECT_TO, url)));
         }
         return response;
