@@ -5,13 +5,12 @@ import io.github.matgalv2.githubtools.converter.RepositoryConverter;
 import io.github.matgalv2.githubtools.service.GithubExplorerService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotBlank;
 
 
-@Controller
+@RestController
 @AllArgsConstructor
 public class GithubExplorerController {
 
@@ -20,8 +19,7 @@ public class GithubExplorerController {
 
     @GetMapping("/repos/{username}")
     public ResponseEntity<?> getUserRepositories(@PathVariable @NotBlank String username){
-        return githubExplorerService
-                .getUserRepositories(username)
+        return githubExplorerService.getUserRepositories(username)
                 .map(repositories -> repositories.stream().map(converter.repositoryToAPI()::map))
                 .fold(
                         error -> ResponseEntity.status(error.getStatus()).body(error),
