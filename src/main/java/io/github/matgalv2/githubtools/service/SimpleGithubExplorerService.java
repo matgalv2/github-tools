@@ -11,8 +11,8 @@ import org.springframework.web.client.RestClient;
 
 import java.util.List;
 
-import static io.github.matgalv2.githubtools.common.ErrorMessages.COULD_NOT_CONNECT_TO;
-import static io.github.matgalv2.githubtools.common.ErrorMessages.COULD_NOT_GET_BRANCHES;
+import static io.github.matgalv2.githubtools.common.ErrorMessage.COULD_NOT_CONNECT_TO;
+import static io.github.matgalv2.githubtools.common.ErrorMessage.COULD_NOT_GET_BRANCHES;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 
@@ -48,7 +48,7 @@ public class SimpleGithubExplorerService implements GithubExplorerService {
                 .mapLeft(error ->
                         new Error(
                                 error.getStatus(),
-                                String.format(COULD_NOT_GET_BRANCHES, repositoryName, error.getMessage()))
+                                String.format(COULD_NOT_GET_BRANCHES.value(), repositoryName, error.getMessage()))
                 );
         return response;
     }
@@ -73,7 +73,7 @@ public class SimpleGithubExplorerService implements GithubExplorerService {
                             return Either.right(resp.bodyTo(typeRef));
                     });
         } catch (Exception exception) {
-            response = Either.left(new Error(500, String.format(COULD_NOT_CONNECT_TO, url)));
+            response = Either.left(new Error(500, String.format(COULD_NOT_CONNECT_TO.value(), url)));
         }
         return response;
     }
