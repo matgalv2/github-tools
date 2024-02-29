@@ -15,6 +15,5 @@ public class RepositoryDTO {
     private String ownerLogin;
     private String repositoryName;
     private List<BranchDTO> branches;
-    private List<Error> errors;
 
 }
