@@ -7,9 +7,9 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Branch {
-    private String name;
+    private final String name;
     @JsonProperty("commit")
-    private Commit lastCommit;
+    private final Commit lastCommit;
 
     public String getLastCommitSha() {
         return lastCommit.getSha();

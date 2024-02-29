@@ -12,16 +12,16 @@ import io.github.matgalv2.githubtools.common.Error;
 
 @Data
 public class Repository {
-    private String name;
-    private Owner owner;
+    private final String name;
+    private final Owner owner;
     @JsonProperty("branches_url")
-    private String branchesUrl;
-    private boolean fork;
+    private final String branchesUrl;
+    private final boolean fork;
     @JsonProperty("private")
-    private boolean isPrivate;
+    private final boolean isPrivate;
 
-    private List<Branch> branches;
-    private List<Error> errors;
+    private final List<Branch> branches;
+    private final List<Error> errors;
 
     @JsonCreator
     public Repository(String name, Owner owner, String branchesUrl, boolean fork, boolean isPrivate, List<Branch> branches, List<Error> errors){
@@ -32,5 +32,15 @@ public class Repository {
         this.isPrivate = isPrivate;
         this.branches = branches == null ? List.of() : branches;
         this.errors = errors == null ? List.of() : errors;
+    }
+
+    public Repository withBranchesUrl(String branchesUrl){
+        return new Repository(name, owner, branchesUrl, fork, isPrivate, branches, errors);
+    }
+    public Repository withBranches(List<Branch> branches){
+        return new Repository(name, owner, branchesUrl, fork, isPrivate, branches, errors);
+    }
+    public Repository withErrors(List<Error> errors){
+        return new Repository(name, owner, branchesUrl, fork, isPrivate, branches, errors);
     }
 }
