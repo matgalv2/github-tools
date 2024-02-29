@@ -1,4 +1,4 @@
-package io.github.matgalv2.githubtools.common;
+package io.github.matgalv2.githubtools.error;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
