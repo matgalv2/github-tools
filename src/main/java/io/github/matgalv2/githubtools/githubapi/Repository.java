@@ -7,7 +7,7 @@ import lombok.Data;
 
 import java.util.List;
 
-import io.github.matgalv2.githubtools.common.Error;
+import io.github.matgalv2.githubtools.error.Error;
 
 
 @Data
@@ -21,26 +21,33 @@ public class Repository {
     private final boolean isPrivate;
 
     private final List<Branch> branches;
-    private final List<Error> errors;
 
     @JsonCreator
-    public Repository(String name, Owner owner, String branchesUrl, boolean fork, boolean isPrivate, List<Branch> branches, List<Error> errors){
+    public Repository(String name, Owner owner, String branchesUrl, boolean fork, boolean isPrivate, List<Branch> branches){
         this.name = name;
         this.owner = owner;
         this.branchesUrl = branchesUrl;
         this.fork = fork;
         this.isPrivate = isPrivate;
         this.branches = branches == null ? List.of() : branches;
-        this.errors = errors == null ? List.of() : errors;
+    }
+
+    public Repository(Repository that){
+        this.name = that.name;
+        this.owner = that.owner;
+        this.branchesUrl = that.branchesUrl;
+        this.fork = that.fork;
+        this.isPrivate = that.isPrivate;
+        this.branches = that.branches;
     }
 
     public Repository withBranchesUrl(String branchesUrl){
-        return new Repository(name, owner, branchesUrl, fork, isPrivate, branches, errors);
+        return new Repository(name, owner, branchesUrl, fork, isPrivate, branches);
     }
     public Repository withBranches(List<Branch> branches){
-        return new Repository(name, owner, branchesUrl, fork, isPrivate, branches, errors);
+        return new Repository(name, owner, branchesUrl, fork, isPrivate, branches);
     }
     public Repository withErrors(List<Error> errors){
-        return new Repository(name, owner, branchesUrl, fork, isPrivate, branches, errors);
+        return new Repository(name, owner, branchesUrl, fork, isPrivate, branches);
     }
 }

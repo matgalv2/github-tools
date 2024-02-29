@@ -1,7 +1,7 @@
 package io.github.matgalv2.githubtools.dto;
 
 
-import io.github.matgalv2.githubtools.common.Error;
+import io.github.matgalv2.githubtools.error.Error;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

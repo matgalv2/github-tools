@@ -1,6 +1,8 @@
 package io.github.matgalv2.githubtools.service;
 
-import io.github.matgalv2.githubtools.common.Error;
+import io.github.matgalv2.githubtools.error.CouldNotConnectToGithubApi;
+import io.github.matgalv2.githubtools.error.Error;
+import io.github.matgalv2.githubtools.error.ServiceException;
 import io.github.matgalv2.githubtools.githubapi.Branch;
 import io.github.matgalv2.githubtools.githubapi.Repository;
 import io.vavr.control.Either;
@@ -12,8 +14,6 @@ import org.springframework.web.client.RestClient;
 import java.net.URI;
 import java.util.List;
 
-import static io.github.matgalv2.githubtools.common.ErrorMessage.COULD_NOT_CONNECT_TO;
-import static io.github.matgalv2.githubtools.common.ErrorMessage.COULD_NOT_GET_BRANCHES;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 
@@ -28,41 +28,37 @@ public class SimpleGithubExplorerService implements GithubExplorerService {
 
 
     @Override
-    public Either<Error, List<Repository>> getUserRepositories(String username) {
+    public List<Repository> getUserRepositories(String username) {
         ParameterizedTypeReference<List<Repository>> typeRef = new ParameterizedTypeReference<>() {};
-        Either<Error, List<Repository>> response = getRequest(String.format(reposURL, username), typeRef);
 
-        // There is no need to filter public repositories, because unauthorized requests get only public repositories.
+        List<Repository> response = getRequest(String.format(reposURL, username), typeRef);
         return response
-                .map(repositories -> repositories.stream().filter(repository -> !repository.isFork()))
-                .map(repositories -> repositories.map(repository -> {
+                .stream().filter(repository -> !repository.isFork())
+                .map(repository -> {
                     String url = String.format(branchesURL, repository.getOwner().getLogin(), repository.getName());
                     return repository.withBranchesUrl(url);
-                }))
-                .map(repositories -> repositories.map(repository -> {
-                    Either<Error, List<Branch>> branches = getBranches(repository.getBranchesUrl(), repository.getName());
-                    if (branches.isLeft())
-                        return repository.withErrors(List.of(branches.getLeft()));
-                    else
-                        return repository.withBranches(branches.get());
-                }).toList());
+                })
+                .map(repository -> {
+                    List<Branch> branches = getBranches(repository.getBranchesUrl(), repository.getName());
+                    return repository.withBranches(branches);
+                }).toList();
 
     }
 
-    private Either<Error, List<Branch>> getBranches(String branchesURL, String repositoryName) {
+    private List<Branch> getBranches(String branchesURL, String repositoryName) {
         ParameterizedTypeReference<List<Branch>> typeRef = new ParameterizedTypeReference<>() {};
-        Either<Error, List<Branch>> response = getRequest(branchesURL, typeRef);
-        return response.mapLeft(
-                error ->
-                        new Error(
-                            error.getStatus(),
-                            String.format(COULD_NOT_GET_BRANCHES.value(), repositoryName, error.getMessage())
-                        )
-        );
+        try{
+            return getRequest(branchesURL, typeRef);
+        }
+        catch (ServiceException exception){
+            String message = String.format("Could not get branches for repository %s due to error: %s", repositoryName, exception.getError().getMessage());
+            Error error = new Error(exception.getError().getStatus(), message);
+            throw new ServiceException(error);
+        }
     }
 
-    private <T> Either<Error, T> getRequest(String url, ParameterizedTypeReference<T> typeRef) {
-        Either<Error, T> response;
+    private <T> T getRequest(String url, ParameterizedTypeReference<T> typeRef) {
+        T response;
 
         try {
             response = client
@@ -71,12 +67,15 @@ public class SimpleGithubExplorerService implements GithubExplorerService {
                     .accept(APPLICATION_JSON)
                     .exchange((req, resp) -> {
                         if (resp.getStatusCode().is4xxClientError())
-                            return Either.left(new Error(resp.getStatusCode().value(), resp.getStatusText()));
+                            throw new ServiceException(new Error(resp.getStatusCode().value(), resp.getStatusText()));
                         else
-                            return Either.right(resp.bodyTo(typeRef));
+                            return resp.bodyTo(typeRef);
                     });
+        } catch (ServiceException error) {
+            throw new ServiceException(error.getError());
         } catch (Exception exception) {
-            response = Either.left(new Error(500, String.format(COULD_NOT_CONNECT_TO.value(), url)));
+            String message = String.format("Could not connect to %s", url);
+            throw new CouldNotConnectToGithubApi(message);
         }
         return response;
     }
