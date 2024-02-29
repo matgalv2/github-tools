@@ -5,7 +5,6 @@ import io.github.matgalv2.githubtools.error.Error;
 import io.github.matgalv2.githubtools.error.ServiceException;
 import io.github.matgalv2.githubtools.githubapi.Branch;
 import io.github.matgalv2.githubtools.githubapi.Repository;
-import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
