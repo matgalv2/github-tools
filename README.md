@@ -5,6 +5,10 @@ Technology stack:
 * JAVA
 * Spring
 
+There are 2 branches:
+* master - functional approach using Either type
+* main - approach closer to Spring's convention with error handling
+
 ## API
 ### Endpoints
     /repos/{username} 
