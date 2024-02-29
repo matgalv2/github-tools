@@ -8,9 +8,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-
 
 @RestController
 @AllArgsConstructor
@@ -29,7 +26,7 @@ public class GithubExplorerController {
      */
 
     @GetMapping("/repos/{username}")
-    public ResponseEntity<?> getUserRepositories(@PathVariable @NotEmpty String username){
+    public ResponseEntity<?> getUserRepositories(@PathVariable String username){
         return githubExplorerService.getUserRepositories(username)
                 .map(repositories -> repositories.stream().map(repository -> mapper.map(repository, RepositoryDTO.class)))
                 .fold(
