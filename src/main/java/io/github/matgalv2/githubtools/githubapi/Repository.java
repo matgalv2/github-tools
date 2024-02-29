@@ -47,7 +47,4 @@ public class Repository {
     public Repository withBranches(List<Branch> branches){
         return new Repository(name, owner, branchesUrl, fork, isPrivate, branches);
     }
-    public Repository withErrors(List<Error> errors){
-        return new Repository(name, owner, branchesUrl, fork, isPrivate, branches);
-    }
 }
