@@ -7,7 +7,6 @@ import io.github.matgalv2.githubtools.githubapi.Branch;
 import io.github.matgalv2.githubtools.githubapi.Commit;
 import io.github.matgalv2.githubtools.githubapi.Owner;
 import io.github.matgalv2.githubtools.githubapi.Repository;
-import io.github.matgalv2.githubtools.error.Error;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.modelmapper.ModelMapper;
@@ -37,13 +36,11 @@ public class RepositoryConverterTest {
     @Test
     public void correctConversion(){
         BranchDTO expectedBranch = new BranchDTO("branch", "lastCommitSha");
-        Error error = new Error(400, "error");
-        RepositoryDTO expected = new RepositoryDTO("login", "test", List.of(expectedBranch), List.of(error));
+        RepositoryDTO expected = new RepositoryDTO("login", "test", List.of(expectedBranch));
         RepositoryDTO converted = mapper.map(createRepository(), RepositoryDTO.class);
 
         assertEquals(expected.getRepositoryName(), converted.getRepositoryName());
         assertEquals(expected.getOwnerLogin(), converted.getOwnerLogin());
         assertEquals(expected.getBranches(), converted.getBranches());
-        assertEquals(expected.getErrors(), converted.getErrors());
     }
 }
