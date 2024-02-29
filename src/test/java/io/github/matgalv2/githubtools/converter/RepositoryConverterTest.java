@@ -10,6 +10,7 @@ import io.github.matgalv2.githubtools.githubapi.Repository;
 import io.github.matgalv2.githubtools.common.Error;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -24,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class RepositoryConverterTest {
 
     @Autowired
-    private RepositoryConverter converter;
+    private ModelMapper mapper;
 
     public Repository createRepository(){
         Owner owner = new Owner("login");
@@ -39,7 +40,7 @@ public class RepositoryConverterTest {
         BranchDTO expectedBranch = new BranchDTO("branch", "lastCommitSha");
         Error error = new Error(400, "error");
         RepositoryDTO expected = new RepositoryDTO("login", "test", List.of(expectedBranch), List.of(error));
-        RepositoryDTO converted = converter.repositoryToAPI().map(createRepository());
+        RepositoryDTO converted = mapper.map(createRepository(), RepositoryDTO.class);
 
         assertEquals(expected.getRepositoryName(), converted.getRepositoryName());
         assertEquals(expected.getOwnerLogin(), converted.getOwnerLogin());
