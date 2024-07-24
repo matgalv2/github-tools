@@ -81,5 +81,4 @@ public class SimpleGithubExplorerService implements GithubExplorerService {
         }
         return response;
     }
-
 }
