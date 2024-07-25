@@ -42,14 +42,12 @@ public class GithubExplorerControllerTest {
 
     @Test
     public void givenNotExistentUsername_whenGetUserRepos_thenStatus404() throws Exception {
-        ResultActions resultActions = mvc.perform(get("/repos/."));
-        resultActions.andExpect(status().isNotFound());
+        mvc.perform(get("/repos/.")).andExpect(status().isNotFound());
     }
 
     @Test
     public void givenExistentUsername_whenGetUserRepos_thenStatus200() throws Exception {
-        ResultActions resultActions = mvc.perform(get("/repos/matgalv2"));
-        resultActions.andExpect(status().isOk());
+        mvc.perform(get("/repos/matgalv2")).andExpect(status().isOk());
     }
 
 }
