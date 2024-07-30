@@ -2,12 +2,10 @@
 Simple REST application for listing user's repositories 
 
 Technology stack:
-* JAVA
-* Spring
-
-There are 2 branches:
-* master - functional approach using Either type
-* main - approach closer to Spring's convention with error handling
+* Java 21
+* Spring Boot 3.2.2
+* WireMock
+* Mockito
 
 ## API
 ### Endpoints
