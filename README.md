@@ -7,6 +7,10 @@ Technology stack:
 * WireMock
 * Mockito
 
+There are 2 branches each representing different approach:
+* master - approach utilizing RestClient 
+* feign_client - approach utilizing FeignClient
+
 ## API
 ### Endpoints
     /repos/{username} 
