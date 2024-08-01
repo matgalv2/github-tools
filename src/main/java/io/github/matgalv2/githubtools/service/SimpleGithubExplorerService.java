@@ -1,10 +1,12 @@
 package io.github.matgalv2.githubtools.service;
 
-import io.github.matgalv2.githubtools.error.CouldNotConnectToGithubApi;
+import io.github.matgalv2.githubtools.dto.RepositoryDTO;
+import io.github.matgalv2.githubtools.error.ApplicationException;
 import io.github.matgalv2.githubtools.error.Error;
-import io.github.matgalv2.githubtools.error.ServiceException;
 import io.github.matgalv2.githubtools.githubapi.Branch;
 import io.github.matgalv2.githubtools.githubapi.Repository;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
@@ -17,37 +19,43 @@ import java.util.List;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Service
+@RequiredArgsConstructor
 public class SimpleGithubExplorerService implements GithubExplorerService {
 
     private final RestClient client;
-    private final String repositoriesURL;
-    private final String branchesURL;
+    private final ModelMapper mapper;
 
 
-    public SimpleGithubExplorerService(@Value("${github.api.baseURL}") String baseURL,
-                                       @Value("${github.api.endpoint.branches}") String branchesEndpoint,
-                                       @Value("${github.api.endpoint.repositories}") String repositoriesEndpoint,
-                                       RestClient client) {
-        this.client = client;
-        this.repositoriesURL = baseURL + repositoriesEndpoint;
-        this.branchesURL = baseURL + branchesEndpoint;
+    @Value("${github.api.endpoint.repositories}")
+    private String repositoriesEndpoint;
+    @Value("${github.api.endpoint.branches}")
+    private String branchEndpoint;
+    @Value("${github.api.baseURL}")
+    private String baseURL;
+
+
+    public String getRepositoriesURL(){
+        return baseURL + repositoriesEndpoint;
+    }
+
+    public String getBranchesURL(){
+        return baseURL + branchEndpoint;
     }
 
     @Override
-    public List<Repository> getUserRepositories(String username) {
+    public List<RepositoryDTO> getUserRepositories(String username) {
         ParameterizedTypeReference<List<Repository>> typeRef = new ParameterizedTypeReference<>() {};
 
-        List<Repository> response = getRequest(String.format(repositoriesURL, username), typeRef);
+        List<Repository> response = getRequest(String.format(getRepositoriesURL(), username), typeRef);
         return response.stream()
                 .filter(repository -> !repository.isFork() && !repository.isPrivate())
-                .map(repository -> {
-                    String url = String.format(branchesURL, repository.getOwner().getLogin(), repository.getName());
-                    return repository.withBranchesUrl(url);
+                .peek(repository -> {
+                    String url = String.format(getBranchesURL(), repository.getOwner().getLogin(), repository.getName());
+                    List<Branch> branches = getBranches(url);
+                    repository.setBranches(branches);
                 })
-                .map(repository -> {
-                    List<Branch> branches = getBranches(repository.getBranchesUrl());
-                    return repository.withBranches(branches);
-                }).toList();
+                .map(repository -> mapper.map(repository, RepositoryDTO.class))
+                .toList();
     }
 
     private List<Branch> getBranches(String branchesURL) {
@@ -67,11 +75,11 @@ public class SimpleGithubExplorerService implements GithubExplorerService {
                         if (resp.getStatusCode().is2xxSuccessful())
                             return resp.bodyTo(typeRef);
                         else
-                            throw new ServiceException(new Error(resp.getStatusCode().value(), resp.getStatusText()));
+                            throw new ApplicationException(new Error(resp.getStatusCode().value(), resp.getStatusText()));
                     });
         } catch (ResourceAccessException resourceAccessException) {
-            String message = String.format("Could not connect to %s", url);
-            throw new CouldNotConnectToGithubApi(message);
+            Error error = new Error(503, String.format("Could not connect to %s", url));
+            throw new ApplicationException(error);
         }
         return response;
     }
