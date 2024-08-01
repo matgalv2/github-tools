@@ -5,8 +5,7 @@ import io.github.matgalv2.githubtools.dto.RepositoryDTO;
 import io.github.matgalv2.githubtools.error.ApplicationException;
 import io.github.matgalv2.githubtools.error.Error;
 import io.github.matgalv2.githubtools.service.GithubExplorerService;
-import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,16 +14,14 @@ import java.util.List;
 
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class GithubExplorerController {
 
     private final GithubExplorerService githubExplorerService;
-    private final ModelMapper mapper;
 
     @GetMapping("/repos/{username}")
     public List<RepositoryDTO> getUserRepositories(@PathVariable String username){
-        return githubExplorerService.getUserRepositories(username)
-                .stream().map(repository -> mapper.map(repository, RepositoryDTO.class)).toList();
+        return githubExplorerService.getUserRepositories(username);
     }
 
     @ExceptionHandler(ApplicationException.class)
