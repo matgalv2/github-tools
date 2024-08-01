@@ -5,14 +5,12 @@ import io.github.matgalv2.githubtools.dto.RepositoryDTO;
 import io.github.matgalv2.githubtools.githubapi.Branch;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@EnableFeignClients(clients = GithubClient.class)
 public class GithubExplorerFeignClientService implements GithubExplorerService {
 
     private final GithubClient githubClient;
