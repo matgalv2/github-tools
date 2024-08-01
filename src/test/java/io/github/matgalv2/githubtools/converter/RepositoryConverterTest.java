@@ -30,7 +30,7 @@ public class RepositoryConverterTest {
         Owner owner = new Owner("login");
         Commit commit = new Commit("lastCommitSha");
         Branch branch = new Branch("branch", commit);
-        return new Repository("test", owner, "branchesUrl", false, false, List.of(branch));
+        return new Repository("test", owner, false, false, List.of(branch));
     }
 
     @Test
