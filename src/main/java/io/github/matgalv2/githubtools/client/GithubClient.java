@@ -11,10 +11,10 @@ import java.util.List;
 
 @FeignClient(name = "githubAPI", url = "${github.api.baseURL}")
 public interface GithubClient {
-    @RequestMapping(method = RequestMethod.GET, path = "/users/{username}/repos")
+    @RequestMapping(method = RequestMethod.GET, path = "${github.api.endpoint.repositories}")
     List<Repository> getRepositories(@PathVariable("username") String username);
 
-    @RequestMapping(method = RequestMethod.GET, value = "/repos/{username}/{repository}/branches")
+    @RequestMapping(method = RequestMethod.GET, value = "${github.api.endpoint.branches}")
     List<Branch> getBranches(@PathVariable("username") String username, @PathVariable("repository") String repositoryName);
 
 }
