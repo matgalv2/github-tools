@@ -18,6 +18,7 @@ public class CommonMapper {
         mapper = new ModelMapper();
         mapper.typeMap(Branch.class, BranchDTO.class).addMapping(Branch::getLastCommitSha, BranchDTO::setLastCommit);
         mapper.typeMap(Repository.class, RepositoryDTO.class).addMapping(Repository::getName, RepositoryDTO::setRepositoryName);
+        mapper.typeMap(Repository.class, RepositoryDTO.class).addMapping(Repository::getOwnerLogin, RepositoryDTO::setOwnerLogin);
     }
 
     @Bean

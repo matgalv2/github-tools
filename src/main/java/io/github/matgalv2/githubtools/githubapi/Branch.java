@@ -12,6 +12,6 @@ public class Branch {
     private final Commit lastCommit;
 
     public String getLastCommitSha() {
-        return lastCommit.getSha();
+        return lastCommit.sha();
     }
 }
