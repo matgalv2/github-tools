@@ -20,10 +20,10 @@ public class GithubExplorerFeignClientService implements GithubExplorerService {
     @Override
     public List<RepositoryDTO> getUserRepositories(String username) {
         return githubClient.getRepositories(username)
-                .stream()
-                .peek(repository -> {
+                .parallelStream()
+                .map(repository -> {
                     List<Branch> branches = githubClient.getBranches(username, repository.getName());
-                    repository.setBranches(branches);
+                    return repository.withBranches(branches);
                 })
                 .map(repository -> modelMapper.map(repository, RepositoryDTO.class))
                 .toList();
