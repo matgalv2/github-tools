@@ -3,14 +3,13 @@ package io.github.matgalv2.githubtools.githubapi;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.Setter;
+import lombok.Getter;
 
 import java.util.List;
 
 
 
-@Data
+@Getter
 public class Repository {
     private final String name;
     private final Owner owner;
@@ -18,8 +17,7 @@ public class Repository {
     @JsonProperty("private")
     private final boolean isPrivate;
 
-    @Setter
-    private List<Branch> branches;
+    private final List<Branch> branches;
 
     @JsonCreator
     public Repository(String name, Owner owner, boolean fork, boolean isPrivate, List<Branch> branches){
@@ -30,12 +28,11 @@ public class Repository {
         this.branches = branches == null ? List.of() : branches;
     }
 
-    public Repository(Repository that){
-        this.name = that.name;
-        this.owner = that.owner;
-        this.fork = that.fork;
-        this.isPrivate = that.isPrivate;
-        this.branches = that.branches;
+    public Repository withBranches(List<Branch> branches){
+        return new Repository(name, owner, fork, isPrivate, branches);
     }
 
+    public String getOwnerLogin() {
+        return owner.login();
+    }
 }

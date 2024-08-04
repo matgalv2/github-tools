@@ -1,12 +1,12 @@
 package io.github.matgalv2.githubtools.githubapi;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class Commit {
-    private String sha;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record Commit(String sha) {
+    @JsonCreator
+    public Commit(@JsonProperty String sha) {
+        this.sha = sha;
+    }
 }
