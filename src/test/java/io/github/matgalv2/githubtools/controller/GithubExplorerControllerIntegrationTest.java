@@ -55,28 +55,36 @@ public class GithubExplorerControllerIntegrationTest {
 						[
 						    {
 							    "name": "repo1",
-							    "owner": "username",
+								"owner": {
+							    	"login": "username"
+							    },
 							    "branches_url": "https://api.github.com/repos/user/repo1/branches{/branch}",
 							    "fork": false,
 							    "private": false
 						    },
 						    {
 						        "name": "repo2",
-							    "owner": "username",
+							    "owner": {
+							    	"login": "username"
+							    },
 							    "branches_url": "https://api.github.com/repos/user/repo2/branches{/branch}",
 							    "fork": true,
 							    "private": false
 						    },
 						    {
 							    "name": "repo3",
-							    "owner": "username",
+							    "owner": {
+							    	"login": "username"
+							    },
 							    "branches_url": "https://api.github.com/repos/user/repo3/branches{/branch}",
 							    "fork": false,
 							    "private": true
 						    },
 						    {
 						        "name": "repo4",
-							    "owner": "username",
+							    "owner": {
+							    	"login": "username"
+							    },
 							    "branches_url": "https://api.github.com/repos/user/repo4/branches{/branch}",
 							    "fork": true,
 							    "private": true
@@ -130,7 +138,9 @@ public class GithubExplorerControllerIntegrationTest {
 						[
 						    {
 							    "name": "repo1",
-							    "owner": "username",
+							    "owner": {
+							    	"login": "username"
+							    },
 							    "branches_url": "https://api.github.com/repos/user/repo1/branches{/branch}",
 							    "fork": false,
 							    "private": false
