@@ -1,4 +1,5 @@
 # GitHub Tools
+(Suggestions from email were implemented on feign_client branch)
 Simple REST application for listing user's repositories 
 
 Technology stack:
