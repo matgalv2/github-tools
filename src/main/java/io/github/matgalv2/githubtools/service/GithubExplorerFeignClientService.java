@@ -21,6 +21,7 @@ public class GithubExplorerFeignClientService implements GithubExplorerService {
     public List<RepositoryDTO> getUserRepositories(String username) {
         return githubClient.getRepositories(username)
                 .parallelStream()
+                .filter(repository -> !repository.isFork() && !repository.isPrivate())
                 .map(repository -> {
                     List<Branch> branches = githubClient.getBranches(username, repository.getName());
                     return repository.withBranches(branches);
