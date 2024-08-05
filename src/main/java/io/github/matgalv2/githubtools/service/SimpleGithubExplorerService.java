@@ -47,12 +47,13 @@ public class SimpleGithubExplorerService implements GithubExplorerService {
         ParameterizedTypeReference<List<Repository>> typeRef = new ParameterizedTypeReference<>() {};
 
         List<Repository> response = getRequest(String.format(getRepositoriesURL(), username), typeRef);
-        return response.stream()
+        return response
+                .parallelStream()
                 .filter(repository -> !repository.isFork() && !repository.isPrivate())
-                .peek(repository -> {
-                    String url = String.format(getBranchesURL(), repository.getOwner().getLogin(), repository.getName());
+                .map(repository -> {
+                    String url = String.format(getBranchesURL(), repository.getOwnerLogin(), repository.getName());
                     List<Branch> branches = getBranches(url);
-                    repository.setBranches(branches);
+                    return repository.withBranches(branches);
                 })
                 .map(repository -> mapper.map(repository, RepositoryDTO.class))
                 .toList();
