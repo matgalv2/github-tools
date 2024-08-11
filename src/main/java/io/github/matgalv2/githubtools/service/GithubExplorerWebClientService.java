@@ -6,14 +6,18 @@ import io.github.matgalv2.githubtools.githubapi.Repository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 
 @Service
 @RequiredArgsConstructor
-public class SimpleGithubExplorerService implements GithubExplorerService {
+public class GithubExplorerWebClientService implements GithubExplorerService {
 
     private final WebClient client;
     private final ModelMapper mapper;
@@ -27,28 +31,26 @@ public class SimpleGithubExplorerService implements GithubExplorerService {
 
     @Override
     public Flux<RepositoryDTO> getUserRepositories(String username) {
-        String repositoriesURI = String.format(repositoriesEndpoint, username);
-        Flux<RepositoryDTO> response = client
+        return getRepositories(username).map(repository -> mapper.map(repository, RepositoryDTO.class));
+    }
+
+    private Flux<Repository> getRepositories(String username) {
+        Flux<Repository> repositories = client
                 .get()
-                .uri(repositoriesURI)
+                .uri(repositoriesEndpoint, username)
                 .retrieve()
                 .bodyToFlux(Repository.class)
-                .map(repository -> {
-                    Flux<Branch> branches = getBranches(username, repository.getName());
-                    return repository.withBranches(branches);
-                })
-                .map(repository -> mapper.map(repository, RepositoryDTO.class));
-        return response;
+                .flatMap(repository -> getBranches(username, repository.getName()).flatMap(branches -> Mono.just(repository.withBranches(branches))));
+        return repositories;
     }
 
-    private Flux<Branch> getBranches(String username, String repositoryName) {
-        String branchesURI = String.format(branchEndpoint, username, repositoryName);
-        Flux<Branch> branches = client
+    private Mono<List<Branch>> getBranches(String username, String repositoryName) {
+        ParameterizedTypeReference<List<Branch>> type = new ParameterizedTypeReference<>() {};
+        Mono<List<Branch>> branches = client
                 .get()
-                .uri(branchesURI)
+                .uri(branchEndpoint, username, repositoryName)
                 .retrieve()
-                .bodyToFlux(Branch.class);
+                .bodyToMono(type);
         return branches;
     }
-
 }
