@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 
@@ -18,18 +19,18 @@ public class Repository {
     @JsonProperty("private")
     private final boolean isPrivate;
 
-    private final List<Branch> branches;
+    private final Flux<Branch> branches;
 
     @JsonCreator
-    public Repository(String name, Owner owner, boolean fork, boolean isPrivate, List<Branch> branches){
+    public Repository(String name, Owner owner, boolean fork, boolean isPrivate, Flux<Branch> branches){
         this.name = name;
         this.owner = owner;
         this.fork = fork;
         this.isPrivate = isPrivate;
-        this.branches = branches == null ? List.of() : branches;
+        this.branches = branches == null ? Flux.just() : branches;
     }
 
-    public Repository withBranches(List<Branch> branches){
+    public Repository withBranches(Flux<Branch> branches){
         return new Repository(name, owner, fork, isPrivate, branches);
     }
 
