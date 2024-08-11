@@ -19,18 +19,18 @@ public class Repository {
     @JsonProperty("private")
     private final boolean isPrivate;
 
-    private final Flux<Branch> branches;
+    private final List<Branch> branches;
 
     @JsonCreator
-    public Repository(String name, Owner owner, boolean fork, boolean isPrivate, Flux<Branch> branches){
+    public Repository(String name, Owner owner, boolean fork, boolean isPrivate, List<Branch> branches){
         this.name = name;
         this.owner = owner;
         this.fork = fork;
         this.isPrivate = isPrivate;
-        this.branches = branches == null ? Flux.just() : branches;
+        this.branches = branches == null ? List.of() : branches;
     }
 
-    public Repository withBranches(Flux<Branch> branches){
+    public Repository withBranches(List<Branch> branches){
         return new Repository(name, owner, fork, isPrivate, branches);
     }
 

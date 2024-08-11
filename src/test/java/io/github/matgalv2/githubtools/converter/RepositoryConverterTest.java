@@ -13,7 +13,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import reactor.core.publisher.Flux;
 
 import java.util.List;
 
@@ -31,7 +30,7 @@ public class RepositoryConverterTest {
         Owner owner = new Owner("login");
         Commit commit = new Commit("lastCommitSha");
         Branch branch = new Branch("branch", commit);
-        return new Repository("test", owner, false, false, Flux.just(branch));
+        return new Repository("test", owner, false, false, List.of(branch));
     }
 
     @Test
