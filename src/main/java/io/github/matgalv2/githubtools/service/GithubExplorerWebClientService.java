@@ -40,7 +40,9 @@ public class GithubExplorerWebClientService implements GithubExplorerService {
                 .uri(repositoriesEndpoint, username)
                 .retrieve()
                 .bodyToFlux(Repository.class)
-                .flatMap(repository -> getBranches(username, repository.getName()).flatMap(branches -> Mono.just(repository.withBranches(branches))));
+                .flatMap(repository -> getBranches(username, repository.getName()).flatMap(branches -> Mono.just(repository.withBranches(branches))))
+                .filter(repository -> !repository.isFork() && !repository.isPrivate());
+
         return repositories;
     }
 
