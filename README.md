@@ -9,9 +9,9 @@ Technology stack:
 * Mockito
 
 There are 2 branches each representing different approach:
-* master - approach utilizing RestClient
-* feign_client - approach utilizing FeignClient
-* webclient_flux - approach utilizing nonblocking WebClient
+* master - approach utilizing nonblocking WebClient (reactive / immutable structures)
+* feign_client - approach utilizing FeignClient (imperative / mutable structures - memory aware)
+
 
 ## API
 ### Endpoints
