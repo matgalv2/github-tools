@@ -1,4 +1,5 @@
 # GitHub Tools
+(Suggestions from email were implemented on feign_client branch)
 Simple REST application for listing user's repositories 
 
 Technology stack:
@@ -8,8 +9,9 @@ Technology stack:
 * Mockito
 
 There are 2 branches each representing different approach:
-* master - approach utilizing RestClient
-* feign_client - approach utilizing FeignClient
+* master - approach utilizing nonblocking WebClient (reactive / immutable structures)
+* feign_client - approach utilizing FeignClient (imperative / mutable structures - memory aware)
+
 
 ## API
 ### Endpoints
