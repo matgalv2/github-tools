@@ -22,9 +22,9 @@ public class GithubExplorerFeignClientService implements GithubExplorerService {
         return githubClient.getRepositories(username)
                 .parallelStream()
                 .filter(repository -> !repository.isFork() && !repository.isPrivate())
-                .map(repository -> {
+                .peek(repository -> {
                     List<Branch> branches = githubClient.getBranches(username, repository.getName());
-                    return repository.withBranches(branches);
+                    repository.setBranches(branches);
                 })
                 .map(repository -> modelMapper.map(repository, RepositoryDTO.class))
                 .toList();
