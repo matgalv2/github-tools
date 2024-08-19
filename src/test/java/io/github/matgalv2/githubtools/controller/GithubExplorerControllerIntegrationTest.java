@@ -49,7 +49,7 @@ public class GithubExplorerControllerIntegrationTest {
     public void test_existing_user_correct_response() throws Exception {
         String username = "username";
 
-        wireMockExtension.stubFor(WireMock.get(urlMatching(String.format(endpointRepositories, username)))
+        wireMockExtension.stubFor(WireMock.get(urlMatching(endpointRepositories.replaceFirst("\\{.*?}", username)))
                 .willReturn(
                         aResponse()
                                 .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -57,24 +57,36 @@ public class GithubExplorerControllerIntegrationTest {
 						[
 						    {
 							    "name": "repo1",
+							    "owner": {
+							    	"login": "username"
+							    },
 							    "branches_url": "https://api.github.com/repos/user/repo1/branches{/branch}",
 							    "fork": false,
 							    "private": false
 						    },
 						    {
 						        "name": "repo2",
+							    "owner": {
+							    	"login": "username"
+							    },
 							    "branches_url": "https://api.github.com/repos/user/repo2/branches{/branch}",
 							    "fork": true,
 							    "private": false
 						    },
 						    {
 							    "name": "repo3",
+							    "owner": {
+							    	"login": "username"
+							    },
 							    "branches_url": "https://api.github.com/repos/user/repo3/branches{/branch}",
 							    "fork": false,
 							    "private": true
 						    },
 						    {
 						        "name": "repo4",
+							    "owner": {
+							    	"login": "username"
+							    },
 							    "branches_url": "https://api.github.com/repos/user/repo4/branches{/branch}",
 							    "fork": true,
 							    "private": true
@@ -82,7 +94,7 @@ public class GithubExplorerControllerIntegrationTest {
 						]
 						""")));
 
-		wireMockExtension.stubFor(WireMock.get(urlMatching(String.format(endpointBranches, ".*", ".*")))
+		wireMockExtension.stubFor(WireMock.get(urlMatching(endpointBranches.replaceFirst("\\{.*?}", username).replaceFirst("\\{.*?}", ".*?")))
 				.willReturn(
 						aResponse()
 								.withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -120,7 +132,7 @@ public class GithubExplorerControllerIntegrationTest {
 	@Test
 	public void test_nonexistent_user_not_found_response() throws Exception {
 		String username = "username";
-		wireMockExtension.stubFor(WireMock.get(urlMatching(String.format(endpointRepositories, username)))
+		wireMockExtension.stubFor(WireMock.get(urlMatching(endpointRepositories.replaceFirst("\\{.*?}", username)))
 				.willReturn(
 						aResponse()
 								.withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -128,6 +140,9 @@ public class GithubExplorerControllerIntegrationTest {
 						[
 						    {
 							    "name": "repo1",
+							    "owner": {
+							    	"login": "username"
+							    },
 							    "branches_url": "https://api.github.com/repos/user/repo1/branches{/branch}",
 							    "fork": false,
 							    "private": false
@@ -135,7 +150,7 @@ public class GithubExplorerControllerIntegrationTest {
 						]
 						""")));
 
-		wireMockExtension.stubFor(WireMock.get(urlMatching(String.format(endpointBranches, ".*", ".*")))
+		wireMockExtension.stubFor(WireMock.get(urlMatching(endpointBranches.replaceFirst("\\{.*?}", username).replaceFirst("\\{.*?}", ".*?")))
 				.willReturn(
 						aResponse()
 								.withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -159,7 +174,7 @@ public class GithubExplorerControllerIntegrationTest {
 	@Test
 	public void test_githubApiError_internal_server_error_response() throws Exception {
 		String username = "username";
-		wireMockExtension.stubFor(WireMock.get(urlMatching(String.format(endpointRepositories, username)))
+		wireMockExtension.stubFor(WireMock.get(urlMatching(endpointRepositories.replaceFirst("\\{.*?}", username)))
 				.willReturn(serverError()));
 
 		this.mockMvc
