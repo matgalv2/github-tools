@@ -21,6 +21,14 @@ jobs:
           distribution: 'corretto'
           java-version: '21'
 
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
       - name: Build Project (compile and package)
         run: mvn clean package -DskipTests
 
@@ -38,6 +46,14 @@ jobs:
         with:
           distribution: 'corretto'
           java-version: '21'
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
 
       - name: Run Tests
         run: mvn test
